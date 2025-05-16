@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    {% if not username %}
+        <div class="authlinks">
+            <p><a href="/login">Войти</a> или <a href="/register">Зарегистрироваться</a></p>
+        </div>
+    {% endif %}
+{% endblock %}

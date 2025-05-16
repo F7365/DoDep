@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoDep - {% block title %}{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .userpanel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .username {
+            color: #555;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .depbtn, .logoutbtn {
+            background: #e0e0e0;
+            color: #555;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .logoutbtn:hover {
+            background: #d0d0d0;
+        }
+        .depbtn {
+            background: #4CAF50;
+            color: white;
+        }
+        .logoutbtn {
+            background: #e0e0e0;
+            color: #555;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .logoutbtn:hover {
+            background: #d0d0d0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .flashmsg {
+            margin-bottom: 20px;
+        }
+        .flash {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .flash.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .flash.error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .flash.info {
+            background-color: #d9edf7;
+            color: #31708f;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .formgroup {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .authlinks {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .authlinks a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .authlinks a:hover {
+            text-decoration: underline;
+        }
+        .cardscontainer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        .card {
+            background: #f9f9f9; /* Нежно-серый фон */
+            border-radius: 12px; /* Скругленные углы */
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .cardheader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .cardtitle {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        .cardtheme {
+            color: #888; /* Светлый цвет для темы */
+            font-size: 0.9em;
+        }
+        .card-desc {
+            color: #555;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .cardmeta {
+            display: flex;
+            justify-content: space-between;
+            color: #888; /* Тусклый цвет как у темы */
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+        .cardactions {
+            display: flex;
+            gap: 10px;
+        }
+        .btnyes, .btnno {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btnyes {
+            background: #4CAF50;
+            color: white;
+        }
+        .btnno {
+            background: #f44336;
+            color: white;
+        }
+        .btnyes:hover {
+            background: #3e8e41;
+        }
+        .btnno:hover {
+            background: #d32f2f;
+        }
+        .cardactions button {
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+        .cardactions button.active {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        .btnyes, .btnno {
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        .btnyes.active {
+            opacity: 1;
+            background: #2E7D32;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #2E7D32;
+        }
+        .btnno.active {
+            opacity: 1;
+            background: #C62828;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #C62828;
+        }
+    </style>
+</head>
+<body>
+    {% if username %}
+    <div class="userpanel">
+        <span class="username">{{ username }}</span>
+        <a class="depbtn">{{ ddps }}</a>
+        <a href="/logout" class="logoutbtn">Выйти</a>
+    </div>
+    {% endif %}
+    <div class="container">
+        <header>
+            <h1>DoDep</h1>
+        </header>
+        <div class="flashmsg">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div class="cardscontainer" id="cardscontainer">
+            {% for card in cards %}
+            <div class="card" data-id="{{ card.r }}" data-remove-at="{{ card.remove_at if 'remove_at' in card else '' }}">
+                <div class="cardheader">
+                    <h3 class="cardtitle">{{ card.title }}</h3>
+                    <div class="cardtheme">{{ card.theme }}</div>
+                </div>
+                <div class="card-desc">{{ card.desc }}</div>
+                <div class="cardmeta">
+                    <span>Создано: {{ card.time }}</span>
+                    <span>Действует: {{ card.period }} ч</span>
+                </div>
+                <div class="cardactions">
+                    <button 
+                        class="btnyes {% if (card.user_choice == 'yes') or (username in stats[card.r]['yes']) %}active{% endif %}" 
+                        data-card-id="{{ card.r }}"
+                    >Да</button>
+                    
+                    <button 
+                        class="btnno {% if (card.user_choice == 'no') or (username in stats[card.r]['no']) %}active{% endif %}" 
+                        data-card-id="{{ card.r }}"
+                    >Нет</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+    <script>
+        document.querySelector('.logoutbtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('/logout').then(() => window.location.href = '/');});
+        document.querySelectorAll('.cardactions button').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.card');
+                const cardid = card.dataset.id;
+                const ifyesbutton = this.classList.contains('btnyes');
+                const action = ifyesbutton ? 'yes' : 'no';
+                const isactive = this.classList.contains('active');
+                if (isactive) {
+                    this.classList.remove('active');
+                    sendvote(cardid, 'cancel');
+                    return;
+                }
+                const otherbutton = card.querySelector(ifyesbutton ? '.btnno' : '.btnyes');
+                const otherbuttonactive = otherbutton.classList.contains('active');
+                if (otherbuttonactive) {
+                    otherbutton.classList.remove('active');
+                }
+                this.classList.add('active');
+                sendvote(cardid, action);
+            });
+        });
+        function sendvote(cardid, action) {
+            fetch(`/card_action/${cardid}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            });
+        }
+        function checkexpiredcards() {
+            const now = Math.floor(Date.now() / 1000);
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const cardid = card.dataset.id;
+                const removeat = card.dataset.removeAt;
+                if (removeat && parseFloat(removeat) < now) {
+                    fetch(`/remove_card/${cardid}`, {
+                        method: 'POST'
+                    }).then(response => {
+                        if (response.ok) {
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                card.remove();
+                                if (window.cardsData) {
+                                    window.cardsData = window.cardsData.filter(c => c.r !== cardid);
+                                }
+                            }, 300);
+                        }
+                    });
+                }
+            });
+        }
+        setInterval(checkexpiredcards, 1000);
+        setInterval(() => {
+            if (!window.location.href.includes('register') && !window.location.href.includes('login')) {
+                location.reload();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
